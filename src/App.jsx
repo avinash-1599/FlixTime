@@ -1,12 +1,11 @@
 import React from 'react'
 import './index.css'
+import Body from './components/Body'
 
 function App() {
 
   return (
-      <div className='font-bold text-2xl text-blue-400'>
-        Lets build FlixTime using React and Vite
-      </div>
+      <Body />
   )
 }
 
