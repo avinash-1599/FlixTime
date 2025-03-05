@@ -2,6 +2,8 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../modals/user.js";
+import authMiddleware from "../utils/auth.js";
+import { blacklistedTokens } from "../utils/auth.js";
 
 const router = express.Router();
 const JWT_SECRET = "Flix@Time#123#"; 
@@ -55,6 +57,16 @@ router.post("/login", async (req, res) => {
     console.error(err.message);
     res.status(500).send("Server error");
   }
+});
+
+// User Logout
+router.post("/logout", authMiddleware, (req, res) => {
+  const token = req.header("Authorization");
+  if (token) {
+    blacklistedTokens.add(token); // Add token to the blacklist
+  }
+  console.log("User logged out successfully", blacklistedTokens);
+  res.json({ msg: "Logged out successfully" });
 });
 
 export default router;

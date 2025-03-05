@@ -2,6 +2,9 @@ import React, { useState, useRef } from 'react'
 import Header from './Header'
 import { validateData } from '../utils/validate';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { addUser } from '../utils/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
 
@@ -9,6 +12,8 @@ const Login = () => {
     const name = useRef(null);
     const email = useRef(null);
     const password = useRef(null);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [errorMsg, setErrorMsg] = useState(null);
 
@@ -38,7 +43,8 @@ const Login = () => {
               });
       
               console.log("Signup Success:", response.data);
-              alert("Signup successful! You can now log in.");
+              dispatch(addUser(response.data.user));
+              navigate("/browse");
 
         }else{
             // login logic
@@ -48,8 +54,9 @@ const Login = () => {
               });
       
               console.log("Login Success:", response.data);
-              localStorage.setItem("token", response.data.user.token);
-              alert("Login successful!");
+              //localStorage.setItem("token", response.data.user.token);
+              dispatch(addUser(response.data.user));
+              navigate("/browse");
         }
     }
 
