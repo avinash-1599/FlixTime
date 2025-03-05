@@ -1,8 +1,7 @@
 import React, { useState, useRef } from 'react'
 import Header from './Header'
 import { validateData } from '../utils/validate';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../utils/config/firebase';
+import axios from 'axios';
 
 const Login = () => {
 
@@ -17,11 +16,11 @@ const Login = () => {
         setIsSignInForm(!isSignInForm);
     }
 
-    const handleButtonClick = () => {
+    const handleButtonClick = async () => {
         // form validation
-        const nameInput = name.current.value;
-        const inputEmail = email.current.value;
-        const inputPassword = password.current.value;
+        const nameInput = name?.current?.value;
+        const inputEmail = email?.current?.value;
+        const inputPassword = password?.current?.value;
 
         const message = validateData(nameInput, inputEmail, inputPassword);
 
@@ -31,19 +30,26 @@ const Login = () => {
 
         if(!isSignInForm){
             // sign up logic
-            createUserWithEmailAndPassword(auth, inputEmail, inputPassword)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log("User Signed Up", user);
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log("Error", errorCode, errorMessage)
-                setErrorMsg(errorCode + " : " + errorMessage);
-            });
+
+            const response = await axios.post("http://localhost:5001/signup", {
+                name: nameInput,
+                email: inputEmail,
+                password: inputPassword,
+              });
+      
+              console.log("Signup Success:", response.data);
+              alert("Signup successful! You can now log in.");
+
         }else{
             // login logic
+            const response = await axios.post("http://localhost:5001/login", {
+                email: inputEmail,
+                password: inputPassword,
+              });
+      
+              console.log("Login Success:", response.data);
+              localStorage.setItem("token", response.data.user.token);
+              alert("Login successful!");
         }
     }
 
